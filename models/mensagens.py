@@ -1,16 +1,8 @@
-mensagens = [
-  {
-    'id': '1',
-    'conteudo': 'amo a melanie martinez'
-  },
+from utils import db
 
-  {
-    'id':'2',
-    'conteudo':'abuble'
-  },
+class Mensagem(db.Model):
+  id_mensagem = db.Column(db.Integer, primary_key = True)
+  conteudo = db.Column(db.String(500), nullable = False)
   
-  {
-    'id':'3',
-    'conteudo':'abuble2'
-  }
-]
+  def __init__(self, conteudo):
+    self.conteudo = conteudo
