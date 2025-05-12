@@ -57,7 +57,7 @@ def delete_mensagem(id_mensagem):
     db.session.delete(mensagem)
     db.session.commit()
     return jsonify(
-        'Sua mensagem foi apagada com sucesso! Verifique a lista agora :)'
+        {'mensagem':'Sua mensagem foi apagada com sucesso! Verifique a lista agora :)'}
     )
 
 
