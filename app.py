@@ -22,7 +22,7 @@ def read_all_mensagens():
 
 @app.route('/mensagens/<int:id_mensagem>', methods=['GET'])
 def read_one_mensagens(id_mensagem):
-    mensagem = Mensagem.query.get(id_mensagem)
+    mensagem = Mensagem.query.get_or_404(id_mensagem, description="A mensagem com o ID digitado não existe")
     return jsonify({
         'id_mensagem': mensagem.id_mensagem,
         'conteudo': mensagem.conteudo
@@ -43,7 +43,7 @@ def create_mensagem():
 @app.route('/mensagens/<int:id_mensagem>', methods=['PUT'])
 def update_mensagem(id_mensagem):
     new_content = request.form.get('conteudo')
-    mensagem = Mensagem.query.get(id_mensagem)
+    mensagem = Mensagem.query.get_or_404(id_mensagem, description="A mensagem com o ID digitado não existe")
     mensagem.conteudo = new_content
     db.session.commit()
     return jsonify({
@@ -53,7 +53,7 @@ def update_mensagem(id_mensagem):
 
 @app.route('/mensagens/<int:id_mensagem>', methods=['DELETE'])
 def delete_mensagem(id_mensagem):
-    mensagem = Mensagem.query.get(id_mensagem)
+    mensagem = Mensagem.query.get_or_404(id_mensagem, description="A mensagem com o ID digitado não existe")
     db.session.delete(mensagem)
     db.session.commit()
     return jsonify(
