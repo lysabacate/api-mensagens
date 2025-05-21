@@ -1,49 +1,44 @@
-from flask import Blueprint, jsonify
-from app.models.message import Message
+from flask import Blueprint, jsonify, request
+from models.mensagens import Mensagem
+from utils import db
+from schemas.mensagem_schema import MensagemSchema
 
 mensagens_bp = Blueprint('mensagens', __name__)
+mensagem_schema = MensagemSchema()
+mensagem_schema = MensagemSchema(many=True)
 
 @mensagens_bp.route('/', methods=['GET'])
 def read_all_mensagens():
     mensagens = Mensagem.query.all()
-    lista_mensagens = []
-    for mensagem in mensagens:
-        lista_mensagens.append({
-            'id_mensagem': mensagem.id_mensagem,
-            'conteudo': mensagem.conteudo
-        })
-    return jsonify(lista_mensagens)
+    return mensagem_schema.jsonify(mensagens), 200
 
 @mensagens_bp.route('/<int:id_mensagem>', methods=['GET'])
 def read_one_mensagens(id_mensagem):
     mensagem = Mensagem.query.get_or_404(id_mensagem, description="A mensagem com o ID digitado não existe")
-    return jsonify({
-        'id_mensagem': mensagem.id_mensagem,
-        'conteudo': mensagem.conteudo
-    })
+    return mensagem_schema.jsonify(mensagem), 200
 
 @mensagens_bp.route('/', methods=['POST'])
 def create_mensagem():
     conteudo = request.form.get('conteudo')
+    if not conteudo:
+        return jsonify({'mensagem': 'O campo "conteudo" é obrigatório'}), 400
+
     nova_mensagem = Mensagem(conteudo=conteudo)
 
     db.session.add(nova_mensagem)
     db.session.commit()
-    return jsonify({
-        'id_mensagem': nova_mensagem.id_mensagem,
-        'conteudo': nova_mensagem.conteudo
-    })
+    return mensagem_schema.jsonify(conteudo), 201
 
 @mensagens_bp.route('/<int:id_mensagem>', methods=['PUT'])
 def update_mensagem(id_mensagem):
-    new_content = request.form.get('conteudo')
+    new_content = request.form('conteudo')
+    if not new_content:
+        return jsonify({'mensagem': 'O campo "conteudo" é obrigatório'}), 400
+
     mensagem = Mensagem.query.get_or_404(id_mensagem, description="A mensagem com o ID digitado não existe")
     mensagem.conteudo = new_content
     db.session.commit()
-    return jsonify({
-        'id_mensagem': mensagem.id_mensagem,
-        'conteudo': mensagem.conteudo
-    })
+    return mensagem_schema.jsonify(mensagens), 200
 
 @mensagens_bp.route('/<int:id_mensagem>', methods=['DELETE'])
 def delete_mensagem(id_mensagem):
@@ -52,4 +47,4 @@ def delete_mensagem(id_mensagem):
     db.session.commit()
     return jsonify(
         {'mensagem':'Sua mensagem foi apagada com sucesso! Verifique a lista agora :)'}
-    )
+    ), 204
