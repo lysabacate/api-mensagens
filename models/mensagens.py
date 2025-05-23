@@ -1,7 +1,7 @@
 from utils import db
 
 class Mensagem(db.Model):
-  id_mensagem = db.Column(db.Integer, primary_key = True, autoincrement=True)
+  id_mensagem = db.Column(db.Integer, primary_key = True)
   conteudo = db.Column(db.String(500), nullable = False)
   
   def __init__(self, conteudo):
